@@ -24,61 +24,47 @@ import static java.util.Objects.requireNonNull;
  * Position in a DCP stream.
  */
 public class Checkpoint {
-  private final long vbuuid; // vbucket uuid for which the sequence number is valid
-  private final long seqno; // sequence number of a DCP event
-  private final SnapshotMarker snapshot;
+    private final long vbuuid; // VBucket UUID for which the sequence number is valid
+    private final long seqno; // Sequence number of a DCP event
+    private final SnapshotMarker snapshot;
 
-  public static final Checkpoint ZERO = new Checkpoint(0, 0, new SnapshotMarker(0, 0));
+    public static final Checkpoint ZERO = new Checkpoint(0, 0, new SnapshotMarker(0, 0));
 
-  public Checkpoint(@JsonProperty("vbuuid") long vbuuid,
-                    @JsonProperty("seqno") long seqno,
-                    @JsonProperty("snapshot") SnapshotMarker snapshot) {
-    this.vbuuid = vbuuid;
-    this.seqno = seqno;
-    this.snapshot = requireNonNull(snapshot);
-  }
-
-  public long getVbuuid() {
-    return vbuuid;
-  }
-
-  public long getSeqno() {
-    return seqno;
-  }
-
-  public SnapshotMarker getSnapshot() {
-    return snapshot;
-  }
-
-  @Override
-  public String toString() {
-    return vbuuid + "@" + seqno + snapshot;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+    public Checkpoint(@JsonProperty("vbuuid") long vbuuid,
+                      @JsonProperty("seqno") long seqno,
+                      @JsonProperty("snapshot") SnapshotMarker snapshot) {
+        this.vbuuid = vbuuid;
+        this.seqno = seqno;
+        this.snapshot = Objects.requireNonNull(snapshot);
     }
 
-    Checkpoint that = (Checkpoint) o;
-
-    if (vbuuid != that.vbuuid) {
-      return false;
+    public long getVbuuid() {
+        return vbuuid;
     }
-    if (seqno != that.seqno) {
-      return false;
-    }
-    return snapshot.equals(that.snapshot);
-  }
 
-  @Override
-  public int hashCode() {
-    int result = (int) (vbuuid ^ (vbuuid >>> 32));
-    result = 31 * result + (int) (seqno ^ (seqno >>> 32));
-    return result;
-  }
+    public long getSeqno() {
+        return seqno;
+    }
+
+    public SnapshotMarker getSnapshot() {
+        return snapshot;
+    }
+
+    @Override
+    public String toString() {
+        return vbuuid + "@" + seqno + snapshot;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Checkpoint)) return false;
+        Checkpoint that = (Checkpoint) o;
+        return vbuuid == that.vbuuid && seqno == that.seqno && snapshot.equals(that.snapshot);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vbuuid, seqno, snapshot);
+    }
 }
